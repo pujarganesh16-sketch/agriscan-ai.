@@ -432,6 +432,7 @@ def batch_scan(files, plant_name):
                 })
         except Exception as exc:
             rows.append({
+        
                 "Scan ID": None, "Filename": Path(path).name, "Plant": plant_name or "",
                                 "Prediction": "Error", "Confidence": 0.0, "Healthy probability": 0.0,
                 "Risk note": str(exc)
@@ -882,8 +883,6 @@ def expected_calibration_error(
             "count": support, "mean_confidence": mean_confidence, "accuracy": accuracy,
         })
     return float(ece), rows
-
-
 def reliability_diagram_frame(
     probabilities: Any,
     true_indices: Any,
@@ -1311,7 +1310,6 @@ def image_quality_markdown(image: Image.Image | None) -> str:
         + "\n\n*These are photo-quality heuristics, not disease severity measurements.*"
     )
 
-
 def scan_probability_summary(result: Mapping[str, Any]) -> dict[str, Any]:
     """Extract safe, concise uncertainty statistics from a scan result dictionary."""
     raw = result.get("probabilities", result.get("scores", []))
@@ -1401,7 +1399,9 @@ def aggregate_class_scores(
         "score": values,
         "support": np.full(len(labels), matrix.shape[0], dtype=int),
     }).sort_values("score", ascending=False, ignore_index=True)
-     def distribution_shift_summary(reference: Any, current: Any) -> dict[str, float]:
+
+
+def distribution_shift_summary(reference: Any, current: Any) -> dict[str, float]:
     """Compare two class-score distributions using several descriptive distances."""
     p = normalize_scores(reference)
     q = normalize_scores(current)
@@ -1729,8 +1729,7 @@ def _compare_confidence_groups(frame: pd.DataFrame, column: str = "confidence") 
         "p90": float(np.percentile(values, 90)),
     }
 
-
-def _diagnostics_panel() -> tuple[str, pd.DataFrame]:
+                def _diagnostics_panel() -> tuple[str, pd.DataFrame]:
     """Return diagnostics and history analytics for the Advanced Lab tab."""
     return _render_runtime_diagnostics(), _history_analytics()
 
@@ -1819,8 +1818,8 @@ html, body, .gradio-container {
   font-size: 11px;
   letter-spacing: 1.7px;
   font-weight: 900;
-    }    
-    .card, .guide, .panel {
+}
+.card, .guide, .panel {
   background: linear-gradient(145deg, rgba(20, 42, 54, .92), rgba(12, 29, 39, .94)) !important;
   border: 1px solid var(--agri-line) !important;
   border-radius: 20px !important;
@@ -2080,6 +2079,9 @@ if __name__ == "__main__":
         server_port=int(os.environ.get("PORT", "10000")),
         share=os.environ.get("GRADIO_SHARE", "false").lower() == "true",
         show_error=True
-                )
-            
+)
+
+
+                
+                
                 
