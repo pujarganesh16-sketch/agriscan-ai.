@@ -1,4 +1,4 @@
-"""
+7"""
 AgriScan AI — Advanced Crop Health Screening
 -------------------------------------------
 A Gradio application for leaf-image screening using an existing Keras classifier.
@@ -833,53 +833,60 @@ def log_loss_score(probabilities: Any, true_indices: Any, epsilon: float = 1e-12
     p = np.apply_along_axis(normalize_scores, 1, p)
     selected = np.clip(p[np.arange(labels.size), labels], epsilon, 1.0)
     return float(-np.mean(np.log(selected)))
-    def expected_calibration_error(
+    
+def expected_calibration_error(
     probabilities: Any,
     true_indices: Any,
     bins: int = 15,
 ) -> tuple[float, list[dict[str, float | int]]]:
-    """Estimate expected calibration error using equal-width confidence bins.
-
-    ECE is only meaningful when labels come from a representative held-out set.
-    It should not be interpreted as an individual scan's chance of being wrong.
-    """
-    p = _finite_array(probabilities, ndim=2)
+    """Estimate expected calibration error using equal-width confidence bins."""
+    p = np.asarray(probabilities, dtype=float)
     labels = np.asarray(true_indices, dtype=int).reshape(-1)
-    if p.shape[0] != labels.size:
-        raise ValueError("Probability rows and labels must have equal length.")
+
+    if p.ndim != 2 or p.shape[0] != labels.size:
+        raise ValueError("Probabilities and labels must have matching rows.")
     if p.shape[0] == 0:
         return 0.0, []
+    if bins < 1:
+        raise ValueError("bins must be at least 1.")
     if np.any(labels < 0) or np.any(labels >= p.shape[1]):
         raise ValueError("A true label index is outside the class range.")
+
     p = np.apply_along_axis(normalize_scores, 1, p)
-    confidence = p.max(axis=1)
-    predicted = p.argmax(axis=1)
-    correct = (predicted == labels).astype(float)
-    bins = int(np.clip(bins, 2, 100))
-    boundaries = np.linspace(0.0, 1.0, bins + 1)
+    predictions = np.argmax(p, axis=1)
+    confidences = np.max(p, axis=1)
+    correct = (predictions == labels).astype(float)
+
     ece = 0.0
-    rows: list[dict[str, float | int]] = []
+    details: list[dict[str, float | int]] = []
+
     for index in range(bins):
-        lower, upper = boundaries[index], boundaries[index + 1]
+        lower = index / bins
+        upper = (index + 1) / bins
+
         if index == bins - 1:
-            mask = (confidence >= lower) & (confidence <= upper)
+            mask = (confidences >= lower) & (confidences <= upper)
         else:
-            mask = (confidence >= lower) & (confidence < upper)
-        support = int(mask.sum())
-        if support == 0:
-            rows.append({
-                "bin": index + 1, "lower": float(lower), "upper": float(upper),
-                "count": 0, "mean_confidence": 0.0, "accuracy": 0.0,
-            })
+            mask = (confidences >= lower) & (confidences < upper)
+
+        count = int(np.sum(mask))
+        if count == 0:
             continue
-        mean_confidence = float(confidence[mask].mean())
-        accuracy = float(correct[mask].mean())
-        ece += support / labels.size * abs(mean_confidence - accuracy)
-        rows.append({
-            "bin": index + 1, "lower": float(lower), "upper": float(upper),
-            "count": support, "mean_confidence": mean_confidence, "accuracy": accuracy,
+
+        mean_confidence = float(np.mean(confidences[mask]))
+        accuracy = float(np.mean(correct[mask]))
+        ece += (count / labels.size) * abs(accuracy - mean_confidence)
+
+        details.append({
+            "bin": index + 1,
+            "count": count,
+            "mean_confidence": mean_confidence,
+            "accuracy": accuracy,
+            "gap": abs(accuracy - mean_confidence),
         })
-    return float(ece), rows
+
+    return float(ece), details
+
 
 
 def reliability_diagram_frame(
