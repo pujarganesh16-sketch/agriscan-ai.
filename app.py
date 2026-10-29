@@ -1312,9 +1312,9 @@ def image_quality_markdown(image: Image.Image | None) -> str:
         f"- **Color saturation:** {report.saturation:.3f}\n"
         f"- **Green-pixel fraction:** {report.green_fraction:.3f}\n"
         f"- **Image entropy:** {report.entropy:.2f} bits\n\n"
-        "**Notes**\n" + notes
+                "**Notes**\n" + notes
         + "\n\n*These are photo-quality heuristics, not disease severity measurements.*"
-        )
+)
             def scan_probability_summary(result: Mapping[str, Any]) -> dict[str, Any]:
     """Extract safe, concise uncertainty statistics from a scan result dictionary."""
     raw = result.get("probabilities", result.get("scores", []))
