@@ -433,7 +433,7 @@ def batch_scan(files, plant_name):
         except Exception as exc:
             rows.append({
                 "Scan ID": None, "Filename": Path(path).name, "Plant": plant_name or "",
-                "Prediction": "Error", "Confidence": 0.0, "Healthy probability": 0.0,
+                 "Prediction": "Error", "Confidence": 0.0, "Healthy probability": 0.0,
                 "Risk note": str(exc)
             })
     df = pd.DataFrame(rows)
@@ -832,8 +832,8 @@ def log_loss_score(probabilities: Any, true_indices: Any, epsilon: float = 1e-12
         raise ValueError("A true label index is outside the class range.")
     p = np.apply_along_axis(normalize_scores, 1, p)
     selected = np.clip(p[np.arange(labels.size), labels], epsilon, 1.0)
-    return float(-np.mean(np.log(selected)))
-    def expected_calibration_error(
+    return float(-np.mean(np.log(selected))) 
+def expected_calibration_error(
     probabilities: Any,
     true_indices: Any,
     bins: int = 15,
@@ -1232,7 +1232,6 @@ def image_color_histogram(image: Image.Image, bins: int = 16) -> np.ndarray:
         pieces.append(histogram.astype(np.float64))
     return normalize_scores(np.concatenate(pieces))
 
-
 def image_quality_report(image: Image.Image) -> ImageQualityReport:
     """Measure visible image characteristics and return cautious quality notes."""
     valid, reason = _validate_image_object(image)
@@ -1612,7 +1611,7 @@ def _history_analytics() -> pd.DataFrame:
         {"metric": "Distinct predicted labels", "value": summary["distinct_predictions"],
          "interpretation": "Variety of model outputs in stored history."},
     ]
-    return pd.DataFrame(rows)
+return pd.DataFrame(rows)
 
 
 def _safe_csv_path(frame: pd.DataFrame, filename: str) -> str:
@@ -1712,6 +1711,7 @@ def _class_frequency_table(frame: pd.DataFrame, prediction_column: str = "predic
         "count": counts.values,
         "share": counts.values / total if total else np.zeros(len(counts)),
     }).reset_index(drop=True)
+
 
 def _compare_confidence_groups(frame: pd.DataFrame, column: str = "confidence") -> dict[str, float]:
     """Summarize stored score dispersion without treating it as validation accuracy."""
@@ -2079,5 +2079,5 @@ if __name__ == "__main__":
         server_port=int(os.environ.get("PORT", "10000")),
         share=os.environ.get("GRADIO_SHARE", "false").lower() == "true",
         show_error=True
-                )
-            
+    )
+    
