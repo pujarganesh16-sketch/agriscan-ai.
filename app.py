@@ -1319,6 +1319,7 @@ def image_quality_markdown(image: Image.Image | None) -> str:
     """Extract safe, concise uncertainty statistics from a scan result dictionary."""
     raw = result.get("probabilities", result.get("scores", []))
     probabilities = normalize_scores(raw)
+
     if probabilities.size == 0:
         return {
             "top_probability": 0.0,
@@ -1328,6 +1329,7 @@ def image_quality_markdown(image: Image.Image | None) -> str:
             "concentration_proxy": 0.0,
             "top_three_mass": 0.0,
         }
+
     sorted_values = np.sort(probabilities)[::-1]
     return {
         "top_probability": float(sorted_values[0]),
