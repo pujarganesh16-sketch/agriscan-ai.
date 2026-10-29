@@ -31,7 +31,7 @@ import tempfile
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 import gradio as gr
 import numpy as np
@@ -432,9 +432,8 @@ def batch_scan(files, plant_name):
                 })
         except Exception as exc:
             rows.append({
-        
                 "Scan ID": None, "Filename": Path(path).name, "Plant": plant_name or "",
-                                "Prediction": "Error", "Confidence": 0.0, "Healthy probability": 0.0,
+                "Prediction": "Error", "Confidence": 0.0, "Healthy probability": 0.0,
                 "Risk note": str(exc)
             })
     df = pd.DataFrame(rows)
@@ -834,9 +833,7 @@ def log_loss_score(probabilities: Any, true_indices: Any, epsilon: float = 1e-12
     p = np.apply_along_axis(normalize_scores, 1, p)
     selected = np.clip(p[np.arange(labels.size), labels], epsilon, 1.0)
     return float(-np.mean(np.log(selected)))
-
-
-def expected_calibration_error(
+    def expected_calibration_error(
     probabilities: Any,
     true_indices: Any,
     bins: int = 15,
@@ -883,6 +880,8 @@ def expected_calibration_error(
             "count": support, "mean_confidence": mean_confidence, "accuracy": accuracy,
         })
     return float(ece), rows
+
+
 def reliability_diagram_frame(
     probabilities: Any,
     true_indices: Any,
@@ -1310,6 +1309,7 @@ def image_quality_markdown(image: Image.Image | None) -> str:
         + "\n\n*These are photo-quality heuristics, not disease severity measurements.*"
     )
 
+
 def scan_probability_summary(result: Mapping[str, Any]) -> dict[str, Any]:
     """Extract safe, concise uncertainty statistics from a scan result dictionary."""
     raw = result.get("probabilities", result.get("scores", []))
@@ -1713,7 +1713,6 @@ def _class_frequency_table(frame: pd.DataFrame, prediction_column: str = "predic
         "share": counts.values / total if total else np.zeros(len(counts)),
     }).reset_index(drop=True)
 
-
 def _compare_confidence_groups(frame: pd.DataFrame, column: str = "confidence") -> dict[str, float]:
     """Summarize stored score dispersion without treating it as validation accuracy."""
     if frame is None or frame.empty or column not in frame:
@@ -1729,7 +1728,8 @@ def _compare_confidence_groups(frame: pd.DataFrame, column: str = "confidence") 
         "p90": float(np.percentile(values, 90)),
     }
 
-                def _diagnostics_panel() -> tuple[str, pd.DataFrame]:
+
+def _diagnostics_panel() -> tuple[str, pd.DataFrame]:
     """Return diagnostics and history analytics for the Advanced Lab tab."""
     return _render_runtime_diagnostics(), _history_analytics()
 
@@ -2079,9 +2079,5 @@ if __name__ == "__main__":
         server_port=int(os.environ.get("PORT", "10000")),
         share=os.environ.get("GRADIO_SHARE", "false").lower() == "true",
         show_error=True
-)
-
-
-                
-                
-                
+                )
+            
