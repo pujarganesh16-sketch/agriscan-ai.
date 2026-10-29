@@ -1,0 +1,7 @@
+gradio
+tensorflow
+numpy
+pillow
+pandas
+matplotlib
+reportlab
