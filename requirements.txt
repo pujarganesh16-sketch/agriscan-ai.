@@ -1,7 +1,6 @@
-gradio
-tensorflow
-numpy
-pillow
-pandas
-matplotlib
-reportlab
+gradio>=5.0,<6.0
+numpy>=1.26,<3.0
+pandas>=2.1,<3.0
+tensorflow>=2.16,<2.20
+pillow>=10.0
+reportlab>=4.0
