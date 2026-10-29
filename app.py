@@ -1,4 +1,4 @@
-7"""
+"""
 AgriScan AI — Advanced Crop Health Screening
 -------------------------------------------
 A Gradio application for leaf-image screening using an existing Keras classifier.
