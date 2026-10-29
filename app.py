@@ -1301,6 +1301,7 @@ def image_quality_markdown(image: Image.Image | None) -> str:
         report = image_quality_report(image)
     except Exception as exc:
         return f"**Image check:** {_safe_text(exc, 200)}"
+
     notes = "\n".join(f"- {html.escape(note)}" for note in report.notes)
     return (
         "### Photo quality diagnostics\n"
@@ -1312,14 +1313,15 @@ def image_quality_markdown(image: Image.Image | None) -> str:
         f"- **Color saturation:** {report.saturation:.3f}\n"
         f"- **Green-pixel fraction:** {report.green_fraction:.3f}\n"
         f"- **Image entropy:** {report.entropy:.2f} bits\n\n"
-                "**Notes**\n" + notes
+        "**Notes**\n" + notes
         + "\n\n*These are photo-quality heuristics, not disease severity measurements.*"
-)
-            def scan_probability_summary(result: Mapping[str, Any]) -> dict[str, Any]:
+    )
+
+
+def scan_probability_summary(result: Mapping[str, Any]) -> dict[str, Any]:
     """Extract safe, concise uncertainty statistics from a scan result dictionary."""
     raw = result.get("probabilities", result.get("scores", []))
     probabilities = normalize_scores(raw)
-
     if probabilities.size == 0:
         return {
             "top_probability": 0.0,
@@ -1329,7 +1331,6 @@ def image_quality_markdown(image: Image.Image | None) -> str:
             "concentration_proxy": 0.0,
             "top_three_mass": 0.0,
         }
-
     sorted_values = np.sort(probabilities)[::-1]
     return {
         "top_probability": float(sorted_values[0]),
@@ -1339,7 +1340,6 @@ def image_quality_markdown(image: Image.Image | None) -> str:
         "concentration_proxy": entropy_confidence(probabilities),
         "top_three_mass": top_k_mass(probabilities, 3),
     }
-
 
 def confidence_language(probability: float, margin: float) -> str:
     """Return cautious explanatory language for model-score concentration."""
