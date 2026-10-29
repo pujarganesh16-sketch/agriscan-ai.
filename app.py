@@ -39,7 +39,9 @@ from PIL import Image, ImageFilter, ImageStat, ImageDraw
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 APP_NAME = "AgriScan AI"
-BASE_DIR = Path(os.environ.get("AGRISCAN_HOME", "/content/agriscan_ai"))
+BASE_DIR = Path(
+    os.environ.get("AGRISCAN_HOME", str(Path(__file__).resolve().parent))
+)
 MODEL_PATH = Path(os.environ.get("AGRISCAN_MODEL", str(BASE_DIR / "agriscan_model.keras")))
 LABELS_PATH = Path(os.environ.get("AGRISCAN_LABELS", str(BASE_DIR / "class_labels.json")))
 DB_PATH = Path(os.environ.get("AGRISCAN_DB", str(BASE_DIR / "agriscan_app.db")))
